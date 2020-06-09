@@ -64,13 +64,6 @@ class WebMessages:
         web_message = self.success_boiler_plate_wrap(title, body)
         return web_message
 
-    # TODO not used
-    def general_success_msg(self, title, explanation):
-        title = """<h1>{0}</h1>""".format(title)
-        body = """<p>{0}</p>""".format(explanation)
-        web_message = self.success_boiler_plate_wrap(title, body)
-        return web_message
-
     def success_boiler_plate_wrap(self  , title, body):
         """takes the specific message and wraps it up in a boiler plate header and footer"""
         wrap_body = """

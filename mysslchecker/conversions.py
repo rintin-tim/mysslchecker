@@ -2,30 +2,7 @@ from datetime import datetime
 from dateutil import relativedelta
 import re
 import pytz
-# import datetime
-import time
 
-"""def get_sorted_categories(site_list):
-     # wrap up the sorting and categories into a single method 
-
-    valid_sites = []  # list sites that don't have an error key
-    invalid_sites = []  # list sites that do have an error key
-
-    for site in site_list:
-        if "expiry" not in site:
-            invalid_sites.append(site)
-        else:
-            valid_sites.append(site)
-
-    sorted_valid_list = sort_sites(valid_sites, "expiry")
-    sorted_invalid_list = sort_sites(invalid_sites, "url")  # if sites are invalid, sort them alphabetically
-    categorised_list = categorise_sites(sorted_invalid_list + sorted_valid_list)  # add the two lists together and categorise
-    # categorised_list = categorise_sites(sorted_valid_list)  # add the two lists together and categorise
-    # updated_list = sorted_invalid_list + categorised_list  # o
-    # sort valud only
-    # return updated_list
-    return categorised_list
-"""
 
 def get_sorted_categories(site_list):
     """ wrap up the sorting and categories into a single method """
@@ -202,14 +179,3 @@ def to_london_time(python_dt):
     """return london timezone from python date object"""
     ldn_time = python_dt.astimezone(pytz.timezone("Europe/London"))
     return ldn_time
-
-# def ts_to_readable(timestamp):
-#     """ convert the javascript timestamps into a ts_to_readable date format for the email."""
-#     dt = datetime.fromtimestamp(timestamp)
-#     human_format = "%a %d %b %G at %T"
-#     readable_dt = dt.strftime(human_format)
-#     return readable_dt
-
-# def get_date_now():
-#     time_now = datetime.now()
-#     human_format = "%a %d %b %G

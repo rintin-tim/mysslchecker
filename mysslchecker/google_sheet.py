@@ -1,17 +1,13 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import traceback
-from datetime import datetime, timezone, timedelta
-from dateutil import relativedelta
+
+from datetime import datetime
+
 from collections import OrderedDict
 import conversions
-import re
 import pytz
-import urllib.parse
-import sys
 from copy import deepcopy
-import threading
 import os
 
 class GoogleSheet:
@@ -47,7 +43,6 @@ class GoogleSheet:
         self.update_sheet_id = None
         self.update_tab_name = None
         self.forgive = forgiving
-        # self.update_url = self.get_refresh_link()
 
 
     tab_notes = {
@@ -88,29 +83,11 @@ class GoogleSheet:
     sites_to_add = []
     emails_to_add = []
 
-    # default_email_updated = False
-
-
-    # def create_user_tab(self, tab_name):
-    #     sheet_info = self.get_sheet_info()
-    #
-    #     if tab_name not in sheet_info.keys():
-    #         self.user_tab_id = self.create_sheet(tab_name)  # create sheet
-    #         header_row = self.domains_header  # create header  with name "Domains"
-    #         self.insert_values(tab_name, [header_row])
-    #     else:
-    #         self.user_tab_id = self.get_sheet_id(tab_name)
-    #     return self.user_tab_id
-
 
     def no_values_message(self, tab_name, message=None):
         no_domains_msg = "No valid values found in tab named '{0}'. Some suggestions for you: <ul><li>Check that the correct tab was specified</li><li>Check that the tab contains valid information</li> <li>Specify a new tab</li> <li>Delete the existing '{0}' tab completely (a new version will be recreated)</li> <li>Restore an old version of the tab using Google Sheets Version History</li></ul>".format(tab_name)
         message = message if message else no_domains_msg
         return message
-        # print(message)
-        # self.insert_values(self.domains_tab_name, [[message]])
-        # fmt_request = self.set_fmt_header_req(self.domains_tab_id, bg_colour=self.rgb_yellow, text_colour=self.rgb_black)
-        # self.batch_update(fmt_request)
 
     def get_mapping_list(self, mapping, key):
         """ returns list of corresponding values from the mapping TODO improve name and description - this actually converts a mapping dict into a google sheet compatible row"""
@@ -136,26 +113,22 @@ class GoogleSheet:
         head_request = self.set_fmt_header_req(self.update_sheet_id, end_column=1)
         column_width = self.set_column_width(self.update_sheet_id, 220, end_index=1)
         comment = self.create_note_request(self.update_sheet_id, self.tab_notes["update"])
-        # self.batch_update(comment)
         self.batch_update([head_request, column_width, comment])
 
         data_value_list = []
         header = "Update Dashboard and Emails"
-        # data_value_list.append(header)
         refresh = self.refresh_link_cells(0)
-        # refresh = self.insert_refresh_link(tab_name, 1)
         log_date = self.insert_date_now()
-        # value_list = [header, refresh, log_date]
+
         data_value_list.append([header])
         data_value_list.extend(refresh)
         data_value_list.extend(log_date)
-        # a1_range = "{0}!A1".format(tab_name)
+
         self.insert_values(tab_name, data_value_list)
 
     def create_domains_tab(self, tab_name, form_sites=None):
         """ checks if a tab exists of the same name in the sheet, if not create it, else returns its id """
 
-        # sheet_info = self.get_sheet_info()
         self.domains_tab_id = self.get_sheet_id(tab_name)
 
         if self.domains_tab_id:  # tab exists
@@ -168,9 +141,7 @@ class GoogleSheet:
                 form_sites = [[site] for site in form_sites]
                 new_domain_mapping["domains"]["default"] = form_sites
                 updated_domain_row = new_domain_mapping["domains"]["default"]
-                # self.domain_mapping["domains"]["default"] = form_sites
-                # self.domains_default_row = self.domain_mapping["domains"]["default"]  # because the get mapping function doesn;t work with lists
-                #
+
                 values = [header_row]  # cast to an extra list to denote a row
                 values.extend(updated_domain_row)  # add the website rows to the header row
                 self.insert_values(tab_name, values)
@@ -224,9 +195,7 @@ class GoogleSheet:
 
         return updated_big_list[:-consecutive_blanks]  # remove the last n rows - this should be the number of consecutive blanks specified
 
-
     #     if row starts with blank, flag = 1, next loop: if row is blank and add 1 to count, if count matches blanks, stop, else, set flag back to zero
-
 
     def get_email_contacts(self):
         """ get the contacts from the specific sheets in the form of a contact object.
@@ -289,19 +258,6 @@ class GoogleSheet:
         self.insert_drop_downs("priority", recipients=recipients, start_column=list(self.email_mapping.keys()).index("priority"))
         self.insert_drop_downs("frequency", recipients=recipients, start_column=list(self.email_mapping.keys()).index("frequency"))
 
-
-    # def insert_refresh_link(self, tab_name, blank_rows):
-    #     # link = self.refresh_link_cells()
-    #     # values = self.refresh_link_cells()
-    #     # self.insert_values(range, values)
-    #
-    #     # next_row = response['updatedRows'] + 1
-    #     a1_range = "{0}!A2".format(tab_name)
-    #     refresh_rows = self.refresh_link_cells(blank_rows)
-    #     self.insert_values(a1_range, refresh_rows)
-    #     # self.insert_values(link)
-
-
     def get_priority_key(self, sheet_value, reverse=False):
         """ return the python key from the sheet key """
         if not reverse:
@@ -346,8 +302,6 @@ class GoogleSheet:
                 updated_email_row = self.get_mapping_list(list_item_email_mapping,
                                                           "default")  # create list of default values from mapping
                 email_values_list.append(updated_email_row)
-                # del list_item_email_mapping  # clear updated value
-
 
         if self.email_tab_id:
             self.emails_to_add = email_values_list
@@ -360,8 +314,7 @@ class GoogleSheet:
             if form_email_list:
                 email_values_list.insert(0, header_row)
                 self.insert_values(tab_name, email_values_list)  #
-                # self.insert_values(tab_name, [header_row, updated_email_row])  #
-                # del list_item_email_mapping  # cleaner, but might not be needed
+
             else:
                 default_row = self.email_default_row
                 self.insert_values(tab_name, [header_row, default_row])  #
@@ -566,8 +519,6 @@ class GoogleSheet:
 
     @staticmethod
     def set_fmt_header_req(sheet_id, bg_colour=rgb_blue, text_colour=rgb_white, end_column=1):
-        # text_colour = self.rgb_white if not text_colour else text_colour
-        # bg_colour = self.rgb_blue if not bg_colour else bg_colour
 
         request_item = {
             "repeatCell": {
@@ -685,19 +636,6 @@ class GoogleSheet:
             print("sheet id not found. error message: {}".format(err.content))
             return None
 
-
-    # def get_sheet_id(self, tab_name):
-    #     """ get the worksheet id from the name """
-    #     a1_range = "{0}!A1".format(tab_name)
-    #     try:
-    #         request = self.service.spreadsheets().get(spreadsheetId=self.spreadsheet_id, ranges=str(a1_range))
-    #         response = request.execute()
-    #         sheet_id = response["sheets"][0]["properties"]["sheetId"]  # extracts sheetId
-    #         return sheet_id
-    #     except HttpError:
-    #         traceback.print_stack()
-    #         raise Exception("Unable to find Sheet: '{0}' in Spreadsheet: '{1}'".format(tab_name, self.spreadsheet_id))
-
     def get_domains(self):
         """ get the results object from spreadsheet and return the cell values """
         domains = []
@@ -710,17 +648,9 @@ class GoogleSheet:
             next_row_range = "{0}!A{1}".format(self.domains_tab_name, len(domains_from_sheet) + 1)  # find bottom of existing sheet
             self.insert_values(next_row_range, form_sites)  # inserts new sites into bottom of existing
 
-        # if domains:
-        #     # then add the previous retrieved domains
-        #     domains.extend(domains_from_sheet)
-
-        # then add the previous retrieved domains
         if domains_from_sheet:
             domains.extend(domains_from_sheet)
 
-        # domains = domains_from_sheet
-
-        # insert trailing spaces - if row length is less than header length
         if domains:
             for row in domains:
                 if len(row) < len(self.domains_header):

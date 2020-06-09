@@ -1,56 +1,26 @@
 from google_sheet import GoogleSheet
-import subprocess
-# from ast import literal_eval
-import conversions
-# from email_ssl_alert import SendEmail
 import re
 import sys
-import getopt
-from flask import Flask, send_from_directory, Response
+from flask import Flask, Response
 from flask import request as frequest
 from googleapiclient.errors import HttpError
-import datetime
+
 import conversions
 from web_messages import WebMessages
 import os
 from flask import render_template
 import time
-import threading
-# import numpy
-import queue
-import json
+
 from management_sheet import ManagementSheet
-# import multiprocessing
-from rq import Queue
-from worker import conn
-import func_ssl_checker
 from func_ssl_checker import RunSSL
 import math
 
-
-
 app = Flask(__name__)
 
-@app.route('/streams')
-# TODO would need to run in an iframe in a separate thread?
-def stream():
-
-    print("in the stream")
-
-    def eventStream():
-        count = 0
-        while count < 10:
-            time.sleep(1)
-            # wait for source data to be available, then push it
-            count += 1
-            print(count)
-            yield 'data: {}\n\n'.format(count)
-
-    return Response(eventStream(), mimetype="text/event-stream")
 
 def run_flask():
     port = int(os.environ.get('PORT', 5000))
-    # app.run(host='0.0.0.0', port=port)  # comment for local. TODO detect when running locally somehow
+    # app.run(host='0.0.0.0', port=port)  # comment for local.
 
     try:
         print("starting flask server")
@@ -60,40 +30,32 @@ def run_flask():
 
     except OSError:
         print("flask server already running")
-        app.run(debug=True, host='0.0.0.0', port=port)  # comment for local.  TODO does this line make sense?
+        app.run(debug=True, host='0.0.0.0', port=port)  # comment for local.
 
 
 @app.route('/')
 def index():
-    # return "<h1>Hi Tim</h1>"
-    return render_template("form.html")
+     return render_template("form.html")
 
 
 @app.route('/development')
 def development():
-    # return "<h1>Hi Tim</h1>"
     return render_template("form.html")
 
 
 @app.route('/sheet-update')
 def update_tab():
-    # return "<h1>Hi Tim</h1>"
     return render_template("form.html")
 
 
 @app.route('/form', methods=['POST'])
 def form_ssl_checker():
 
-    # TODO remove the GET completely
-
     if frequest.method == 'GET':
         print("get request ignored")
         return "i'm alive"
 
     elif frequest.method == 'POST':
-        # sheet_id = sheetid.strip("/")
-
-        # TODO Fix API error when doing multiple daily runs (add timeout?)
 
         sheet_url = frequest.form.get("sheeturl")
         dashboard_tab = "Dashboard" if not frequest.form.get("dashboardname") else frequest.form.get("dashboardname")
@@ -139,13 +101,6 @@ def form_ssl_checker():
         # split out the websites provided in the form
         if form_site_list:
             form_site_list = clean_web_list(form_site_list)
-            # form_site_list = re.split(r"\s+|,(\s)+|,", form_site_list)
-
-        email_obj = {
-            "email": email_address,
-            "priority": email_priority,
-            "frequency": email_frequency
-        }
 
         email_list = []
 
@@ -199,8 +154,6 @@ def ssl_checker(sheet_id, dashboard_tab=None, email_tab=None, domains_tab=None, 
         mgmt_tab_name = "Users"
     if not update_tab:
         update_tab = "Update Sheet"
-    # if not form_email:
-    #     form_email = None  # None required rather than ""?
 
     mgmtSheetObj = ManagementSheet(mgmt_sheet_id, mgmt_tab_name, sheet_id)
     mySheet = GoogleSheet(sheet_id, forgiving=forgiving)
@@ -374,13 +327,3 @@ def ssl_checker(sheet_id, dashboard_tab=None, email_tab=None, domains_tab=None, 
 
 if __name__ == "__main__":
     print("running ssl checker.py")
-
-# TODO rename app
-# TODO update comments with explanations
-
-# not now
-# TODO merge heroku changes into pycharm folder
-# TODO  consider a suite of testing variables determined by env variable
-# TODO  look into better (longer) heroku logging
-
-# TODO we could have one list for WWW and one for non WWW;s and one for PNPD
