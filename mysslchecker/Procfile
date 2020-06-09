@@ -1,4 +1,3 @@
 # Procfile
 web: gunicorn ssl_checker:app
 worker: python3 worker.py
-# web: python run_flask.py

@@ -1,8 +1,6 @@
 import sys
 from google_sheet import GoogleSheet
-import subprocess
-import datetime
-import traceback
+
 import ssl_checker
 import time
 import os

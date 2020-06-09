@@ -218,7 +218,6 @@ error_message = []  # list of strings ?
 
 
 # TODO cutdown single letter flags!
-# TODO correct or remove the OR in the below - both clauses need to as per "--all"
 
 opts, unknown = getopt.getopt(options, "p:ferlsitncuo:a", ["for", "port=", "expiry", "ts_to_readable", "local", "start", "issuer", "issuershort", "number", "countdown", "countdownshort", "offset=", "forgiving", "timeout=", "all"])  # looks for -p or --port in provided arguments
 
@@ -260,13 +259,11 @@ for opt, arg in opts:
         countdown_short = True
         subject_name = True
         # forgiving = True
-        # timeout = 2  # because Heroku has a 30 second window  #TODO move all these into the ssl_checker
-
 
 if unknown:
     error_01 = "Unknown arguments provided: {0}".format(unknown)
     error_message.append(error_01)
-    # exit(1)  # TODO return exit code at bottom if messages are present
+
 
 # if verbose:
 #     print("get certificate from {0}:{1}".format(address, port))
@@ -402,22 +399,8 @@ if error_message:
     error_message.reverse()  # print the last error first
     result_log["error"] = ", ".join(error_message)  # get a single string of errors
 
-# if "error" in result_log:
-#     print(result_log)  # return the result object (consisting of only error messages)
-#     # exit(1)
-#
 
 print(json.dumps(result_log))
-# print(result_log)
-#
 
-# if len(result_log) == 0:  # in case it's possible to somehow return a valid, empty certificate
-#     result_log["error"] = "SSL is present but no values could be returned"
-#     print(result_log)
-# elif len(result_log) == 1:
-#     result = next(iter(result_log.values()))  # get next (i.e. ONLY) value from dictionary (not in an object)
-#     print(result)
-# else:
-#     print(result_log)  # return result object
 
 

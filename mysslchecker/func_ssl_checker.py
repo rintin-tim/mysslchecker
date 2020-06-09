@@ -1,28 +1,11 @@
-# import
-import queue
-from google_sheet import GoogleSheet
 import subprocess
-# from ast import literal_eval
-import conversions
 from email_ssl_alert import SendEmail
 import re
-import sys
-import getopt
-from flask import Flask, send_from_directory, Response
-from flask import request as frequest
 from googleapiclient.errors import HttpError
-import datetime
 import conversions
-from web_messages import WebMessages
-import os
-from flask import render_template
 import time
-import threading
-# import numpy
 import queue
 import json
-from management_sheet import ManagementSheet
-import multiprocessing
 from rq import Queue
 from worker import conn
 import threading
@@ -98,7 +81,6 @@ class RunSSL:
                     site = json.loads(script_result)  # convert string to dictionary
 
                     if port and (not port == 443):
-                        # site["url"] = "http://{0}:{1}".format(url, port)  # add url to site object  #TODO reinstate
                         site["url"] = "http://{0}:{1}".format(url, port)  # add url to site object
                         print(site["url"])
                     else:
@@ -121,8 +103,6 @@ class RunSSL:
             q.put(domain)
 
         thread_list = []
-
-        # print("q size is: ", q.qsize())  # could use q.qsize() instead of domain len
 
         thread_no = 1
         if 1 <= len(domain_list) <= self.thread_max:
@@ -151,12 +131,6 @@ class RunSSL:
         else:
             self.sorted_site_list = conversions.get_sorted_categories(site_list)
             return 0, self.sorted_site_list
-
-        # self.sorted_site_list = conversions.get_sorted_categories(site_list)
-
-        # return site_list  # return error if site list is none so that this can return sorted site list
-
-    # end it
 
     def run_dashboard_update(self, sorted_site_list=None, mySheet=None, forgiving=None):
         sorted_site_list = self.sorted_site_list if not sorted_site_list else sorted_site_list

@@ -1,7 +1,4 @@
 from google_sheet import GoogleSheet
-from googleapiclient.errors import HttpError
-import time
-
 
 class ManagementSheet(GoogleSheet):
 
@@ -49,7 +46,6 @@ class ManagementSheet(GoogleSheet):
         users = self.get_values(self.mgmt_tab_name)
 
         print("retrieved management sheet users: {}".format(users))
-        # print("retrieved management sheet:", time.time() - st)
 
         users_dict = {}  # place outside "if" statement - required if no existing users
 

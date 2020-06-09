@@ -5,11 +5,8 @@ from datetime import datetime
 from collections import OrderedDict
 import conversions
 import requests
-import json
 import os
-import pytz
 import time
-from urllib.parse import urlparse
 import tldextract
 
 class Message:
@@ -33,9 +30,6 @@ class SendEmail:
         self.smtp_server = os.getenv("2GO_SMTP_SERVER", os.getenv("MG_SMTP_SERVER"))
         self.smtp_login = os.getenv("2GO_SMTP_LOGIN", os.getenv("MG_SMTP_LOGIN"))
         self.smtp_pw = os.getenv("2GO_SMTP_PW", os.getenv("MG_SMTP_PW"))
-        # self.smtp_server = os.getenv("SMTP_SERVER", "MG_SMTP_SERVER")
-        # self.smtp_login = os.getenv("SMTP_LOGIN", "MG_SMTP_LOGIN")
-        # self.smtp_pw = os.getenv("SMTP_PW", "MG_SMTP_PW")
 
     def create_email_header(self, eml_to, eml_from, eml_subject):
         """ MIME header needs to be replaced (cannot be overwritten) """
