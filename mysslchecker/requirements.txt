@@ -49,4 +49,4 @@ tldextract==2.2.0
 uritemplate==3.0.0
 virtualenv==16.0.0
 virtualenv-clone==0.3.0
-Werkzeug==0.14.1
+Werkzeug==0.15.3
