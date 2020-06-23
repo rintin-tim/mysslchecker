@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <meta charset="UTF-8">
+    <link rel="shortcut icon" href="static/favicon.ico">
     <title>SSL Checker &#x1F4C6;</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
@@ -81,6 +82,15 @@
             display: none;
         }
 
+        .control {
+            text-decoration: underline;
+            font-style: italic;
+        }
+
+        span.demo-only {
+            display: none;
+        }
+
    </style>
 
  <script>
@@ -90,7 +100,14 @@
             $( "body" ).addClass( "loading" );
          });
          devMode();
-         $("#advanced-click").click(toggleAdvanced)
+         $("#advanced-click").click(function(event) {
+            event.preventDefault();
+            toggleAdvanced()
+         })
+         $("#demo-status").click(function(event) {
+            event.preventDefault();
+            populateDemo();
+         })
 
     });
 
@@ -158,6 +175,24 @@
         }
     }
 
+    function toggleDemo() {
+        if ($("div.demo-section.start").is(":visible")) {
+        	$("div.demo-section").hide("slow")
+        	$("#demo-status").text("Click to activate 'Live Mode'")
+        	$("#advanced-click").hide()
+        	$("span.bullet").hide()
+        	$(".demo-only").show()
+
+        } else {
+        	$("div.demo-section").show("slow")
+        	$("#demo-status").text("Click to activate 'Demo Mode'")
+        	$("#advanced-click").show()
+        	$("span.bullet").show()
+        	$(".demo-only").hide()
+
+        }
+    }
+
     function populateForm() {
         const urlParams = new URLSearchParams(window.location.search)
 
@@ -173,6 +208,18 @@
         }
      }
 
+     function populateDemo() {
+        sheetId = document.getElementById('sheeturl');
+        if (!sheetId.value) {
+            sheetId.value = 'https://docs.google.com/spreadsheets/d/1fkisLqJ1PlKU818lVo6PdbB3xu5OIXF0NaEHx0a0Mv8';
+        } else {
+            sheetId.value = '';
+        }
+        toggleDemo();
+
+     }
+
+
 
 
     </script>
@@ -185,28 +232,33 @@
 <!--$:not(".form-update").hide()-->
 <main role="main" class="container">
     <div class="show-form">
-    <h1 class="mt-5 form-update">SSL Checker &#x1F4C6;</h1>
+    <h1 class="mt-5 form-update">SSL Checker</h1>
         <div class="form-click-container">
              <p><a id="form-click" href="#" class="form-click">Open full form</a></p>
             </div>
         <section title="introduction" class="non-update">
-            <p>SSL Checker allows you to track and manage multiple SSL Certificates in a single Google Sheet. </p>
+            <p>SSL Checker allows you to track multiple SSL Certificates in a Google Sheet <span class="control">that you control</span> within your Google Drive account.</p>
             <ul>
-                <li>Certificates are colour-coded by expiration, making it easy to see the ones that will need your attention first</li>
+                <li>Give 'SSL Checker' access to a Google Sheet within your Google Drive</li>
+                <li>Enter your website URLs in the form below</li>
+                <li>Certificates are sorted by expiration date and colour-coded</li>
                 <li>Optional email notifications can be sent on a daily, weekly or monthly basis</li>
                 <li>Additional sites and emails can be added via your Google Sheet</li>
             </ul>
 
         <h4>Demo Mode</h4>
-            <p>For a quick demonstration of SSL Checker there's no need to complete the form. Just click the <strong>'Run SSL Checker'</strong> button at the bottom of the page to use a pre-existing Demo Sheet with websites.</p>
-        <h4>Live Mode</h4>
-            <p>Alternatively, to create your own list of SSLs to check, follow the steps below:</p>
+            <p>For a quick demonstration of SSL Checker click the 'Demo Mode' link below to use the pre-existing <a href="https://docs.google.com/spreadsheets/d/1fkisLqJ1PlKU818lVo6PdbB3xu5OIXF0NaEHx0a0Mv8" target="_blank">demonstration sheet</a> (with websites).</p>
+            <p><a id="demo-status" href="#">Click to activate 'Demo Mode'</a></p>
+    <div class="demo-section start">
+            <h4>Live Mode</h4>
+            <p>To use your own personal Google Sheet, follow the steps below:</p>
+    </div>
         </section>
-    <p class="lead non-update">1. To start, <a href="https://docs.google.com/spreadsheets/create" target="_blank">create a new Google Sheet</a> </p>
-        <p class="lead non-update">2. Share your Google sheet with <span class="g-user">cheker@synthetic-howl-215114.iam.gserviceaccount.com </span>(Editor permission needed)</p>
+        <div class="demo-section">
+            <p class="lead non-update"><span class="bullet">1. </span>To start, <a href="https://docs.google.com/spreadsheets/create" target="_blank">create a new Google Sheet</a> </p>
+            <p class="lead non-update"><span class="bullet">2. </span>Share your Google sheet with <span class="g-user">cheker@synthetic-howl-215114.iam.gserviceaccount.com </span>(<strong>Editor permission needed</strong>)</p>
+            <p id="sheetIntro" class="lead form-update"><span class="bullet">3. </span>Enter your Google Sheet's URL or ID</p>
 
-
-        <p id="sheetIntro" class="lead form-update">3. Enter the Google Sheet's URL or ID below</p>
             <form class="pure-form pure-form-aligned form-update" id="checkerform" name="checkerform" action="/form" target="" method="POST">
         <fieldset>
 
@@ -214,13 +266,17 @@
             <div class="form-group">
                 <div class="form-update">
                     <input id="sheeturl" name="sheeturl" type="text" placeholder="For example https://docs.google.com/spreadsheets/d/1Y-wR6KjmbQR6OXVz1M7iTfnyP6RzcGc_ZMLj1ypTNUs"
-                           class="form-control input-md" required="" value="https://docs.google.com/spreadsheets/d/1fkisLqJ1PlKU818lVo6PdbB3xu5OIXF0NaEHx0a0Mv8">
+                           class="form-control input-md" required="" value="">
                     <span class="help-block"><em><u></u></em></span>
                 </div>
             </div>
 
+        </div>
 
-            <p class="lead non-update">4. Enter your website URLs (add more via the sheet or by resubmitting this form)</p>
+
+        <p class="lead non-update"><span class="bullet">4. </span>Enter <span class="demo-only">additional</span>  websites you would like to monitor <span class="demo-only">(optional)</span></p>
+        <p></p>
+
                 <!-- Text input-->
             <div class="form-group non-update">
                 <!--<label class="  control-label" for="websitelist">Initial List of Websites</label>-->
@@ -230,8 +286,11 @@
                     <span class="help-block"></span>
                 </div>
             </div>
-
-            <p class="lead non-update">5. Enter your notification email address (add more via the sheet or by resubmitting this form)</p>
+        <div class="demo-only">
+            <p>NOTE: To delete a website from the <a href="https://docs.google.com/spreadsheets/d/1fkisLqJ1PlKU818lVo6PdbB3xu5OIXF0NaEHx0a0Mv8" target="_blank">demo sheet</a>, remove its URL from the <a href="https://docs.google.com/spreadsheets/d/1fkisLqJ1PlKU818lVo6PdbB3xu5OIXF0NaEHx0a0Mv8/edit#gid=4797132" target="_blank">Websites</a> tab, then run SSL Checker again.</p>
+        </div>
+        <div class="demo-section">
+            <p class="lead non-update"><span class="bullet">5. </span>Enter your notification email address <strong>(optional)</strong></p>
 
             <!-- start of row -->
 
@@ -264,7 +323,7 @@
                     <option value="2 months">2 months</option>
                     <option value="3 months">3 months</option>
                     <option value="6 months">6 months</option>
-                    <option value="All Certificates" selected>All Certificates</option>
+                    <option value="All Certificates" selected>All Dates</option>
                 </select>
             </div>
 
@@ -284,6 +343,7 @@
             <!-- end of row -->
 
             </div>
+        </div>
             <div class="form-update">
              <p><a id="advanced-click" href="#" class="advanced-click">Open advanced settings</a></p>
             </div>
@@ -389,6 +449,7 @@
                 <div class="">
                     <!--<input id="submit" type="submit" name="submit" value="Off We Go" onclick="loading();">-->
                     <!--<button onclick="loading()" id="singlebutton" name="singlebutton" class="btn btn-primary">Off We Go!</button>-->
+
                     <button id="singlebutton" name="singlebutton" class="btn btn-primary">Run SSL Checker</button>
                 </div>
             </div>
