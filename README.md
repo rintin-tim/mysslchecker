@@ -1,6 +1,8 @@
 # mysslchecker
 
-Retrieves SSL certificate data for a list of websites stored in a user’s personal Google Sheet.
+![SSL Checker Dashboard](https://mysslchecker.com/static/sslchecker-dashboard.png)
+
+Tracks SSL certificate data for a list of websites and stores the information in the user’s personal Google Sheet.
 Includes configurable email alerts.
 
 * Certificates are sorted by expiration date and colour-coded
