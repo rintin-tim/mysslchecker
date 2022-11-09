@@ -17,3 +17,8 @@ To use:
 ### Video
 
 {% include youtube.html id="iaYJJtO24OE" %}
+
+{% raw %} {% include youtube.html id="iaYJJtO24OE" %}
+{% endraw %}
+
+{% include youtube.html id="iaYJJtO24OE" %}
